@@ -9,9 +9,24 @@ typedef struct {
 
 #define OUTPUT_PIN	(0x80)			// Set to whatever UCB0SIMO is on your processor (Px.7 here)
 
-#define NUM_LEDS	(60)			// NUMBER OF LEDS IN YOUR STRIP
+#define NUM_LEDS	(5)			// NUMBER OF LEDS IN YOUR STRIP
 
 LED leds[NUM_LEDS] = {{0,0,0}};
+
+
+/*
+ * Timing Analysis :
+ *
+ *  Per WS2812B :
+ *
+ *  				0				1				End
+ *  		Min		0.2us			0.75us			1.1us
+ *  		Max		0.5us			1.05us			1.4us
+ *
+ *  8 Bit 16Mhz/3	0b11 0.375us	0b1111 0.75us	1.5us
+ *  4 Bit 16Hmz/5	0b1  0.313us	0b111 0.938us	1.25us	2 bit by spi send
+ */
+
 
 // Initializes everything needed to use this library. This clears the strip.
 void initStrip(){
@@ -19,7 +34,7 @@ void initStrip(){
 	P1SEL2 |= OUTPUT_PIN;
 	UCB0CTL0 |= UCCKPH + UCMSB + UCMST + UCSYNC; 	// 3-pin, MSB, 8-bit SPI master
 	UCB0CTL1 |= UCSSEL_2;			// SMCLK source (16 MHz)
-	UCB0BR0 = 3;					// 16 MHz / 3 = .1875 us per bit
+	UCB0BR0 = 5;					// 16 MHz / 5 = 0.313 us / bit
 	UCB0BR1 = 0;
 	UCB0CTL1 &= ~UCSWRST;			// Initialize USCI state machine
 
@@ -39,6 +54,7 @@ void showStrip(){
 	
 	// send RGB color for every LED
 	int i, j;
+	u_char output;
 	for (i = 0; i < NUM_LEDS; i++){
 		u_char rgb[3] = {leds[i].green, leds[i].red, leds[i].blue};	// get RGB color for this LED
 
@@ -48,14 +64,25 @@ void showStrip(){
 
 			// check each of the 8 bits
 			while(mask != 0){
-				while (!(IFG2 & UCB0TXIFG));	// wait to transmit
 
+				// Creating output from 2 bits
 				if (rgb[j] & mask){			// most significant bit first
-					UCB0TXBUF = HIGH_CODE;		// send 1
+					output = UPPERBIT(HIGH_CODE);		// send 1
 				}
 				else {
-					UCB0TXBUF = LOW_CODE;		// send 0
+					output = UPPERBIT(LOW_CODE);		// send 0
 				}
+				mask >>= 1;						// check next bit
+				if (rgb[j] & mask){			// most significant bit first
+					output |= (HIGH_CODE);		// send 1
+				}
+				else {
+					output |= (LOW_CODE);		// send 0
+				}
+
+				while (!(IFG2 & UCB0TXIFG));	// wait to transmit
+
+				UCB0TXBUF = output;
 
 				mask >>= 1;						// check next bit
 			}
