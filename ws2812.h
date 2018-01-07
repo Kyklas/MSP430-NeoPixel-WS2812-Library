@@ -2,6 +2,8 @@
 typedef unsigned char u_char;		// 8 bit
 typedef unsigned int u_int;			// 16 bit
 
+#define NUM_LEDS    (40)            // NUMBER OF LEDS IN YOUR STRIP
+
 // Transmit codes
 #define HIGH_CODE	(0x0E)			// b1110
 #define LOW_CODE	(0x08)			// b1000

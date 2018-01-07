@@ -9,7 +9,7 @@ typedef struct {
 
 #define OUTPUT_PIN	(0x80)			// Set to whatever UCB0SIMO is on your processor (Px.7 here)
 
-#define NUM_LEDS	(5)			// NUMBER OF LEDS IN YOUR STRIP
+
 
 LED leds[NUM_LEDS] = {{0,0,0}};
 
@@ -53,7 +53,7 @@ void showStrip(){
 	__bic_SR_register(GIE);       	// disable interrupts
 	
 	// send RGB color for every LED
-	int i, j;
+	unsigned int i, j;
 	u_char output;
 	for (i = 0; i < NUM_LEDS; i++){
 		u_char rgb[3] = {leds[i].green, leds[i].red, leds[i].blue};	// get RGB color for this LED
