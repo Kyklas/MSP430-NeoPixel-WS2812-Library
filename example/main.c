@@ -47,6 +47,6 @@ void gradualFill(u_int n, u_char r, u_char g, u_char b){
 	for (i = 0; i < n; i++){			// n is number of LEDs
 		setLEDColor(i, r, g, b);
 		showStrip();
-		_delay_cycles(1000000);			// lazy delay
+		_delay_cycles(10000);			// lazy delay
 	}
 }

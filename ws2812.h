@@ -5,7 +5,7 @@ typedef unsigned int u_int;			// 16 bit
 #define NUM_LEDS    (85)            // NUMBER OF LEDS IN YOUR STRIP
 
 // Transmit codes
-#define HIGH_CODE	(0x0E)			// b1110
+#define HIGH_CODE	(0x0C)			// b1100
 #define LOW_CODE	(0x08)			// b1000
 
 #define UPPERBIT(x)		((x)<<4)
