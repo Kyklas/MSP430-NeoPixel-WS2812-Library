@@ -19,7 +19,7 @@ int main(void) {
 	// initialize LED strip
 	initStrip();			// ***** HAVE YOU SET YOUR NUM_LEDS DEFINE IN WS2812.C? ******
 
-#define PWR 0x10
+#define PWR 0xFF
 
 	// set strip color red
 	fillStrip(PWR, 0x00, 0x00);
